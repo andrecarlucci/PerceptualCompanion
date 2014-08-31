@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sense", "Sense\Sense.csproj", "{C02D1149-9972-4D7F-B6C6-8C66A512E0B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpPerceptual", "SharpPerceptual\SharpPerceptual.csproj", "{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrWindows", "MrWindows\MrWindows.csproj", "{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C02D1149-9972-4D7F-B6C6-8C66A512E0B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02D1149-9972-4D7F-B6C6-8C66A512E0B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C02D1149-9972-4D7F-B6C6-8C66A512E0B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C02D1149-9972-4D7F-B6C6-8C66A512E0B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E8444AC0-2C96-463F-B1B8-CF8804D7FCDA}</ProjectGuid>
+    <ProjectGuid>{9FB0CC14-AA09-4118-9510-3B0161799EA5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpPerceptual</RootNamespace>
-    <AssemblyName>SharpPerceptual</AssemblyName>
+    <RootNamespace>StringSocket</RootNamespace>
+    <AssemblyName>StringSocket</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,11 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="libpxcclr">
-      <HintPath>..\_libs\libpxcclr.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,23 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FlexiblePart.cs" />
-    <Compile Include="CameraNotFoundException.cs" />
-    <Compile Include="CameraFinder.cs" />
-    <Compile Include="Face.cs" />
-    <Compile Include="Finger.cs" />
-    <Compile Include="Gestures\CustomPose.cs" />
-    <Compile Include="Gestures\PoseFactory.cs" />
-    <Compile Include="Gestures\GestureSensor.cs" />
-    <Compile Include="Gestures\State.cs" />
-    <Compile Include="Hand.cs" />
-    <Compile Include="Gestures\IGestureSensor.cs" />
-    <Compile Include="Gestures\IPoseSensor.cs" />
-    <Compile Include="Item.cs" />
-    <Compile Include="Camera.cs" />
-    <Compile Include="Point3d.cs" />
-    <Compile Include="Gestures\PoseSensor.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

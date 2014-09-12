@@ -78,14 +78,25 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="XDMessaging">
+      <HintPath>..\packages\XDMessaging.4.0.9\lib\net40-Client\XDMessaging.dll</HintPath>
+    </Reference>
+    <Reference Include="XDMessaging.Transport.Amazon">
+      <HintPath>..\packages\XDMessaging.4.0.9\lib\net40-Client\XDMessaging.Transport.Amazon.dll</HintPath>
+    </Reference>
+    <Reference Include="XDMessaging.Transport.IOStream">
+      <HintPath>..\packages\XDMessaging.4.0.9\lib\net40-Client\XDMessaging.Transport.IOStream.dll</HintPath>
+    </Reference>
+    <Reference Include="XDMessaging.Transport.WindowsMessaging">
+      <HintPath>..\packages\XDMessaging.4.0.9\lib\net40-Client\XDMessaging.Transport.WindowsMessaging.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="VirtualKeyStates.cs" />
-    <Compile Include="WinApi.cs" />
+    <Compile Include="RealSenseCredentialPluginClient.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -161,6 +172,10 @@
     <ProjectReference Include="..\SharpPerceptual\SharpPerceptual.csproj">
       <Project>{e8444ac0-2c96-463f-b1b8-cf8804d7fcda}</Project>
       <Name>SharpPerceptual</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StringSocket\StringSocket.csproj">
+      <Project>{9fb0cc14-aa09-4118-9510-3b0161799ea5}</Project>
+      <Name>StringSocket</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

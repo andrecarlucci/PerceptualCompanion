@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using MrWindows.KeyboardControl;
 
 namespace Sense {
     public static class WinApi {
@@ -151,7 +152,7 @@ namespace Sense {
         static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
 
         [DllImport("USER32.dll")]
-        static extern short GetKeyState(VirtualKeyStates nVirtKey);
+        static extern short GetKeyState(VirtualKey nVirtKey);
 
         [DllImport("user32.dll")]
         static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
@@ -215,9 +216,9 @@ namespace Sense {
         }
 
         public static void ScrollHorizontally(int units) {
-            SendKeyboardEventDown(VirtualKeyStates.VK_SHIFT);
+            SendKeyboardEventDown(VirtualKey.VK_SHIFT);
             mouse_event((uint)MouseEventFlags.MOUSEEVENTF_WHEEL, 0, 0, (uint)units, 0);
-            SendKeyboardEventUp(VirtualKeyStates.VK_SHIFT);
+            SendKeyboardEventUp(VirtualKey.VK_SHIFT);
         }
 
         [Flags]
@@ -278,11 +279,11 @@ namespace Sense {
             keybd_event((byte)key, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, (UIntPtr)0);
         }
 
-        public static void SendKeyboardEventUp(VirtualKeyStates key) {
+        public static void SendKeyboardEventUp(VirtualKey key) {
             keybd_event((byte)key, 0x45, 0x1 | 0x2, (UIntPtr)0);
         }
 
-        public static void SendKeyboardEventDown(VirtualKeyStates key) {
+        public static void SendKeyboardEventDown(VirtualKey key) {
             keybd_event((byte)key, 0x45, 0x1, (UIntPtr)0);
         }
 
@@ -315,7 +316,7 @@ namespace Sense {
 
         public static bool IsMouseLeftDown() {
             const int KEY_PRESSED = 0x8000;
-            return Convert.ToBoolean(GetKeyState(VirtualKeyStates.VK_LBUTTON) & KEY_PRESSED);
+            return Convert.ToBoolean(GetKeyState(VirtualKey.VK_LBUTTON) & KEY_PRESSED);
         }
 
         public static void MouseMove(int x, int y) {

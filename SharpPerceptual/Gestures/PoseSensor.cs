@@ -1,4 +1,5 @@
 using System;
+using SharpPerceptual.Gestures;
 
 namespace SharpPerceptual {
     public class PoseSensor : IPoseSensor {

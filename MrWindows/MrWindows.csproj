@@ -41,8 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Files\FileUtil.cs" />
+    <Compile Include="KeyboardControl\Keyboard.cs" />
+    <Compile Include="KeyboardControl\KeyboardPInvoke.cs" />
+    <Compile Include="KeyboardControl\KeyState.cs" />
+    <Compile Include="KeyboardControl\VirtualKey.cs" />
+    <Compile Include="MouseControl\IMouse.cs" />
+    <Compile Include="MouseControl\Mouse.cs" />
+    <Compile Include="MouseControl\MouseEventFlags.cs" />
+    <Compile Include="MouseControl\MousePInvoke.cs" />
+    <Compile Include="MouseControl\POINT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\MathEx.cs" />
+    <Compile Include="WinApi.cs" />
+    <Compile Include="Windows.cs" />
+    <Compile Include="WindowsPInvoke.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

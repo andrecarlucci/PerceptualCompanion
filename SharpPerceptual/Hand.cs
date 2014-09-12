@@ -1,5 +1,5 @@
 ﻿namespace SharpPerceptual {
-    public class Hand : BodyPart {
+    public class Hand : FlexiblePart {
         public Finger Thumb { get; private set; }
         public Finger Index { get; private set; }
         public Finger Middle { get; private set; }

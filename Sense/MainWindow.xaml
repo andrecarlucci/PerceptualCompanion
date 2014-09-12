@@ -7,7 +7,7 @@
         WindowStartupLocation="Manual" 
         Left="0" Top="0"
         Loaded="Window_Loaded"
-        Height="120" Width="160" ResizeMode="NoResize" Opacity="0.5" WindowStyle="None" 
+        Height="180" Width="240" ResizeMode="NoResize" Opacity="0.5" WindowStyle="None" 
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Background="White" 
         Foreground="White" 

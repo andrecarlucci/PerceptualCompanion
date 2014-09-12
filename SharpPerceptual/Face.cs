@@ -1,11 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharpPerceptual {
-    public class Face : BodyPart {
-
-    }
+﻿namespace SharpPerceptual {
+    public class Face : Item {}
 }

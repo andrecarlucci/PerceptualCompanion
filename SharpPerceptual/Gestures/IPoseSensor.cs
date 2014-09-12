@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpPerceptual {
+namespace SharpPerceptual.Gestures {
     public interface IPoseSensor {
         event Action PosePeaceBegin;
         event Action PosePeaceEnd;

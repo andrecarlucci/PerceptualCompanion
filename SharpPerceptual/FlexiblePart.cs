@@ -1,7 +1,7 @@
 using System;
 
 namespace SharpPerceptual {
-    public class BodyPart : Item {
+    public class FlexiblePart : Item {
         
         private bool _isOpen;
         public event Action Opened;
@@ -29,10 +29,6 @@ namespace SharpPerceptual {
             Action handler = Closed;
             if (handler != null) handler();
         }
-
-       
-
-        
 
         protected virtual void OnOpened() {
             Action handler = Opened;

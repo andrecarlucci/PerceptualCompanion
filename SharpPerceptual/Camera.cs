@@ -128,7 +128,7 @@ namespace SharpPerceptual {
         }
 
         private static void SetBodyPartValues(FlexiblePart hand, PXCMGesture.GeoNode geoNode) {
-            hand.IsVisible = geoNode.body > 0;
+            hand.IsVisible = geoNode.body != PXCMGesture.GeoNode.Label.LABEL_ANY;             
             if (!hand.IsVisible) {
                 return;
             }

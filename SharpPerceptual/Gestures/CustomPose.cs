@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace SharpPerceptual.Gestures {
     public class CustomPose {
@@ -40,6 +41,12 @@ namespace SharpPerceptual.Gestures {
 
         private void Evaluate() {
             Active = _flags.Values.All(x => x);
+            var sb =  new StringBuilder();
+            sb.AppendLine("CustomPose: "+Name);
+            foreach (var flag in _flags) {
+                sb.AppendLine("F: " + flag.Value);
+            }
+            Debug.WriteLine(sb);
         }
 
         public bool Active {

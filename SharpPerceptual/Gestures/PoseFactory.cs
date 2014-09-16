@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace SharpPerceptual.Gestures {
     public class PoseFactory {
-        private List<WhatTrigger> _items = new List<WhatTrigger>(); 
+        private List<PoseTrigger> _items = new List<PoseTrigger>(); 
 
         public PoseFactory Combine(FlexiblePart what, State trigger) {
-            _items.Add(new WhatTrigger(what, trigger));
+            _items.Add(new PoseTrigger(what, trigger));
             return this;
         }
 
-        public CustomPose Build() {
-            var gesture = new CustomPose();
+        public CustomPose Build(string name = "custompose") {
+            var gesture = new CustomPose(name);
             foreach (var itemState in _items) {
                 var item = itemState.What;
                 var state = itemState.Trigger;
@@ -26,8 +26,12 @@ namespace SharpPerceptual.Gestures {
                         item.Opened += () => gesture.Flag(id, false);
                         break;
                     case State.Visible:
+                        item.Visible += () => gesture.Flag(id, true);
+                        item.NotVisible += () => gesture.Flag(id, false);
                         break;
                     case State.NotVisible:
+                        item.NotVisible += () => gesture.Flag(id, true);
+                        item.Visible += () => gesture.Flag(id, false);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -37,11 +41,11 @@ namespace SharpPerceptual.Gestures {
             return gesture;
         }
 
-        private class WhatTrigger {
+        private class PoseTrigger {
             public FlexiblePart What { get; set; }
             public State Trigger { get; set; }
 
-            public WhatTrigger(FlexiblePart what, State trigger) {
+            public PoseTrigger(FlexiblePart what, State trigger) {
                 What = what;
                 Trigger = trigger;
             }

@@ -64,7 +64,7 @@ namespace Sense {
             var factory = new PoseFactory();
             factory.Combine(camera.LeftHand, State.Opened);
             factory.Combine(camera.RightHand, State.Opened);
-            CustomPose openBothHands = factory.Build();
+            CustomPose openBothHands = factory.Build("bothHandsOpen");
             openBothHands.Begin += n => {
                 if (_mouseControl) return;
                 _mouseControl = true;
@@ -73,37 +73,44 @@ namespace Sense {
 
             factory.Combine(camera.LeftHand, State.Closed);
             factory.Combine(camera.RightHand, State.Closed);
-            CustomPose closeBothHands = factory.Build();
+            CustomPose closeBothHands = factory.Build("bothHandsClosed");
             closeBothHands.Begin += n => {
+                if (!_mouseControl) return;
                 _mouseControl = false;
                 _win.Mouse.MouseLeftUp();
                 ShowMessage("Mouse control end");
             };
 
             SetupMouseMove(camera);
-
-            camera.LeftHand.Moved += d => DisplayBodyPart(camera.LeftHand);
-            camera.LeftHand.Thumb.Moved += d => DisplayBodyPart(camera.LeftHand.Thumb);
-            camera.LeftHand.Index.Moved += d => DisplayBodyPart(camera.LeftHand.Index);
-            camera.LeftHand.Middle.Moved += d => DisplayBodyPart(camera.LeftHand.Middle);
-            camera.LeftHand.Ring.Moved += d => DisplayBodyPart(camera.LeftHand.Ring);
-            camera.LeftHand.Pinky.Moved += d => DisplayBodyPart(camera.LeftHand.Pinky);
-
-            camera.RightHand.Moved += d => DisplayBodyPart(camera.RightHand);
-            camera.RightHand.Thumb.Moved += d => DisplayBodyPart(camera.RightHand.Thumb);
-            camera.RightHand.Index.Moved += d => DisplayBodyPart(camera.RightHand.Index);
-            camera.RightHand.Middle.Moved += d => DisplayBodyPart(camera.RightHand.Middle);
-            camera.RightHand.Ring.Moved += d => DisplayBodyPart(camera.RightHand.Ring);
-            camera.RightHand.Pinky.Moved += d => DisplayBodyPart(camera.RightHand.Pinky);
-
-            camera.LeftHand.Moved += d => DisplayBodyPart(camera.LeftHand);
-
+            SetUpLeftHand(camera);
+            SetUpRightHand(camera);
+            
             camera.Poses.PosePeaceBegin += _mouse.MouseLeftClick;
             camera.RightHand.Closed += _mouse.MouseLeftDown;
             camera.RightHand.Opened += _mouse.MouseLeftUp;
-            camera.RightHand.NotVisible += _mouse.MouseLeftUp;
+            camera.RightHand.NotVisible += () => {
+                _mouse.MouseLeftUp();
+            };
 
-            camera.Face.Moved += d => DisplayBodyPart(camera.Face, 20);
+            SetUpFace(camera);
+            SetUpArrows(camera);
+
+            camera.Poses.BigFiveBegin += async () => {
+                await _client.Authorize();
+            };
+
+            ShowMessage("Camera Started");
+        }
+
+        private void SetUpArrows(Camera camera) {
+            camera.Gestures.GestureSwipeLeft += () => _win.Keyboard.PressKey(VirtualKey.VK_LEFT);
+            camera.Gestures.GestureSwipeRight += () => _win.Keyboard.PressKey(VirtualKey.VK_RIGHT);
+            camera.Gestures.GestureSwipeUp += () => _win.Keyboard.PressKey(VirtualKey.VK_UP);
+            camera.Gestures.GestureSwipeDown += () => _win.Keyboard.PressKey(VirtualKey.VK_DOWN);
+        }
+
+        private void SetUpFace(Camera camera) {
+            camera.Face.Moved += d => DisplayBodyPart(camera.Face, 30);
             camera.Face.Visible += () => {
                 _shouldLock = false;
                 Debug.WriteLine("Face visible");
@@ -122,25 +129,38 @@ namespace Sense {
                 //}
                 //_win.LockWorkStation();
             };
+        }
 
-            camera.Gestures.GestureSwipeLeft += () => {
-                _win.Keyboard.PressKey(VirtualKey.VK_LEFT);
-            };
-            camera.Gestures.GestureSwipeRight += () => {
-                _win.Keyboard.PressKey(VirtualKey.VK_RIGHT);
-            };
-            camera.Gestures.GestureSwipeUp += () => {
-                _win.Keyboard.PressKey(VirtualKey.VK_UP);
-            };
-            camera.Gestures.GestureSwipeDown += () => {
-                _win.Keyboard.PressKey(VirtualKey.VK_DOWN);
-            };
+        private void SetUpRightHand(Camera camera) {
+            camera.RightHand.Moved += d => DisplayBodyPart(camera.RightHand, 20);
+            camera.RightHand.Thumb.Moved += d => DisplayBodyPart(camera.RightHand.Thumb);
+            camera.RightHand.Index.Moved += d => DisplayBodyPart(camera.RightHand.Index);
+            camera.RightHand.Middle.Moved += d => DisplayBodyPart(camera.RightHand.Middle);
+            camera.RightHand.Ring.Moved += d => DisplayBodyPart(camera.RightHand.Ring);
+            camera.RightHand.Pinky.Moved += d => DisplayBodyPart(camera.RightHand.Pinky);
 
-            camera.Gestures.GestureHandCircle += async () => {
-                await _client.Authorize();
-            };
+            camera.RightHand.NotVisible += () => DisplayBodyPart(camera.RightHand, 20);
+            camera.RightHand.Thumb.NotVisible += () => DisplayBodyPart(camera.RightHand.Thumb);
+            camera.RightHand.Index.NotVisible += () => DisplayBodyPart(camera.RightHand.Index);
+            camera.RightHand.Middle.NotVisible += () => DisplayBodyPart(camera.RightHand.Middle);
+            camera.RightHand.Ring.NotVisible += () => DisplayBodyPart(camera.RightHand.Ring);
+            camera.RightHand.Pinky.NotVisible += () => DisplayBodyPart(camera.RightHand.Pinky);
+        }
 
-            ShowMessage("Camera Started");
+        private void SetUpLeftHand(Camera camera) {
+            camera.LeftHand.Moved += d => DisplayBodyPart(camera.LeftHand, 20);
+            camera.LeftHand.Thumb.Moved += d => DisplayBodyPart(camera.LeftHand.Thumb);
+            camera.LeftHand.Index.Moved += d => DisplayBodyPart(camera.LeftHand.Index);
+            camera.LeftHand.Middle.Moved += d => DisplayBodyPart(camera.LeftHand.Middle);
+            camera.LeftHand.Ring.Moved += d => DisplayBodyPart(camera.LeftHand.Ring);
+            camera.LeftHand.Pinky.Moved += d => DisplayBodyPart(camera.LeftHand.Pinky);
+
+            camera.LeftHand.NotVisible += () => DisplayBodyPart(camera.LeftHand, 20);
+            camera.LeftHand.Thumb.NotVisible += () => DisplayBodyPart(camera.LeftHand.Thumb);
+            camera.LeftHand.Index.NotVisible += () => DisplayBodyPart(camera.LeftHand.Index);
+            camera.LeftHand.Middle.NotVisible += () => DisplayBodyPart(camera.LeftHand.Middle);
+            camera.LeftHand.Ring.NotVisible += () => DisplayBodyPart(camera.LeftHand.Ring);
+            camera.LeftHand.Pinky.NotVisible += () => DisplayBodyPart(camera.LeftHand.Pinky);
         }
 
         private void SetupMouseMove(Camera pipeline) {
@@ -183,19 +203,16 @@ namespace Sense {
         private void DisplayBodyPart(Item part, int size = 5) {
             Action action = delegate {
                 if (!_parts.Keys.Contains(part)) {
-                    if (!part.IsVisible) {
-                        _parts.Remove(part);
-                        return;
-                    }
                     var shape = new Ellipse {
                         Width = size,
                         Height = size
                     };
                     _parts.Add(part, shape);
                     HandCanvas.Children.Add(shape);
+                    //Debug.WriteLine(part.ToString() + " added");
                 }
                 var ellipse = _parts[part];
-                Color color = Color.FromArgb(100, 100, 200, 100);
+                Color color = part.IsVisible ? Color.FromArgb(100, 100, 200, 100) : Colors.Transparent;
                 ellipse.Fill = new SolidColorBrush(color);
                 double left = HandCanvas.ActualWidth - (part.Position.X/320)*HandCanvas.ActualWidth;
                 double top = (part.Position.Y/240)*HandCanvas.ActualHeight;

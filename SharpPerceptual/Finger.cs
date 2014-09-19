@@ -1,5 +1,5 @@
 ﻿namespace SharpPerceptual {
-    public class Finger : FlexiblePart {
+    public class Finger : Item {
         
     }
 }

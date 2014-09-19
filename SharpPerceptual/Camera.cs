@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Sense.Perceptual;
 using SharpPerceptual.Gestures;
 
 namespace SharpPerceptual {
@@ -54,24 +53,9 @@ namespace SharpPerceptual {
         private void Loop() {
             while (true) {
                 AcquireFrame(true);
-                TrackBodyPart(LeftHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_LEFT);
-                TrackBodyPart(RightHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_RIGHT);
-                TrackFingers(LeftHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_LEFT);
-                TrackFingers(RightHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_RIGHT);
-
-                var data = new PXCMFaceAnalysis.Detection.Data();
-                var face = QueryFace();
-                ulong timestamp;
-                int faceId;
-                face.QueryFace(0, out faceId, out timestamp);
-                var location = (PXCMFaceAnalysis.Detection)face.DynamicCast(PXCMFaceAnalysis.Detection.CUID);
-                location.QueryData(faceId, out data);
-                location.QueryData(0, out data);
-                Face.IsVisible = data.rectangle.x > 0;
-                Face.Position = new Point3D {
-                    X = (data.rectangle.x),
-                    Y = (data.rectangle.y),
-                };
+                TrackHandAndFingers(LeftHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_LEFT);
+                TrackHandAndFingers(RightHand, PXCMGesture.GeoNode.Label.LABEL_BODY_HAND_RIGHT);
+                TrackFace();
 
                 //Get face location
                 //faceLocation = (PXCMFaceAnalysis.Detection)faceAnalysis.DynamicCast(PXCMFaceAnalysis.Detection.CUID);
@@ -113,36 +97,65 @@ namespace SharpPerceptual {
             }
         }
 
-        private void TrackBodyPart(FlexiblePart flexiblePart, PXCMGesture.GeoNode.Label bodyLabel) {
-            var values = new PXCMGesture.GeoNode();
-            QueryGesture().QueryNodeData(0, bodyLabel, out values);
-            SetBodyPartValues(flexiblePart, values);
+        private void TrackFace() {
+            var data = new PXCMFaceAnalysis.Detection.Data();
+            var face = QueryFace();
+            ulong timestamp;
+            int faceId;
+            face.QueryFace(0, out faceId, out timestamp);
+            var location = (PXCMFaceAnalysis.Detection) face.DynamicCast(PXCMFaceAnalysis.Detection.CUID);
+            location.QueryData(faceId, out data);
+            location.QueryData(0, out data);
+            Face.IsVisible = data.rectangle.x > 0;
+            Face.Position = new Point3D {
+                X = (data.rectangle.x),
+                Y = (data.rectangle.y),
+            };
         }
 
-        private void TrackFingers(Hand hand, PXCMGesture.GeoNode.Label targetHand) {
-            TrackBodyPart(hand.Thumb, targetHand | PXCMGesture.GeoNode.Label.LABEL_FINGER_THUMB);
-            TrackBodyPart(hand.Index, targetHand | PXCMGesture.GeoNode.Label.LABEL_FINGER_INDEX);
-            TrackBodyPart(hand.Middle, targetHand | PXCMGesture.GeoNode.Label.LABEL_FINGER_MIDDLE);
-            TrackBodyPart(hand.Ring, targetHand | PXCMGesture.GeoNode.Label.LABEL_FINGER_RING);
-            TrackBodyPart(hand.Pinky, targetHand | PXCMGesture.GeoNode.Label.LABEL_FINGER_PINKY);
+        private void TrackHandAndFingers(Hand hand, PXCMGesture.GeoNode.Label bodyLabel) {
+            var geoNode = QueryGeoNode(bodyLabel);
+            TrackPosition(hand, geoNode);
+            TrackOpeness(hand, geoNode);
+
+            TrackFingers(hand.Thumb, bodyLabel | PXCMGesture.GeoNode.Label.LABEL_FINGER_THUMB);
+            TrackFingers(hand.Index, bodyLabel | PXCMGesture.GeoNode.Label.LABEL_FINGER_INDEX);
+            TrackFingers(hand.Middle, bodyLabel | PXCMGesture.GeoNode.Label.LABEL_FINGER_MIDDLE);
+            TrackFingers(hand.Ring, bodyLabel | PXCMGesture.GeoNode.Label.LABEL_FINGER_RING);
+            TrackFingers(hand.Pinky, bodyLabel | PXCMGesture.GeoNode.Label.LABEL_FINGER_PINKY);
         }
 
-        private static void SetBodyPartValues(FlexiblePart hand, PXCMGesture.GeoNode geoNode) {
-            hand.IsVisible = geoNode.body != PXCMGesture.GeoNode.Label.LABEL_ANY;             
-            if (!hand.IsVisible) {
+        private void TrackPosition(Item item, PXCMGesture.GeoNode geoNode) {
+            item.IsVisible = geoNode.body != PXCMGesture.GeoNode.Label.LABEL_ANY;
+            if (!item.IsVisible) {
                 return;
             }
-            hand.Position = new Point3D {
+            Func<double, double> meterToCentimeters = p => p * 100;
+            item.Position = new Point3D {
                 X = geoNode.positionImage.x,
                 Y = geoNode.positionImage.y,
-                Z = geoNode.positionImage.z
+                Z = meterToCentimeters(geoNode.positionWorld.y)
             };
+        }
+
+        private void TrackOpeness(FlexiblePart part, PXCMGesture.GeoNode geoNode) {
             if (geoNode.openness > 75) {
-                hand.IsOpen = true;
+                part.IsOpen = true;
             }
             else if (geoNode.openness < 10) {
-                hand.IsOpen = false;
+                part.IsOpen = false;
             }
+        }
+
+        private void TrackFingers(Item finger, PXCMGesture.GeoNode.Label fingerLabel) {
+            var geoNode = QueryGeoNode(fingerLabel);
+            TrackPosition(finger, geoNode);
+        }
+
+        private PXCMGesture.GeoNode QueryGeoNode(PXCMGesture.GeoNode.Label bodyLabel) {
+            var values = new PXCMGesture.GeoNode();
+            QueryGesture().QueryNodeData(0, bodyLabel, out values);
+            return values;
         }
 
         public override void OnGesture(ref PXCMGesture.Gesture gesture) {

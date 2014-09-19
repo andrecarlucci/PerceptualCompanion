@@ -1,5 +1,4 @@
 using System;
-using Sense.Perceptual;
 
 namespace SharpPerceptual {
     public class Item {

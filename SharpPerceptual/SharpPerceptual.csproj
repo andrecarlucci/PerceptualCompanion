@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,7 +48,13 @@
     <Compile Include="CameraFinder.cs" />
     <Compile Include="Face.cs" />
     <Compile Include="Finger.cs" />
+    <Compile Include="Gestures\CustomGesture.cs" />
     <Compile Include="Gestures\CustomPose.cs" />
+    <Compile Include="Gestures\Direction.cs" />
+    <Compile Include="Gestures\GestureBase.cs" />
+    <Compile Include="Gestures\GesturePunch.cs" />
+    <Compile Include="Gestures\Movement.cs" />
+    <Compile Include="Gestures\MovementForward.cs" />
     <Compile Include="Gestures\PoseFactory.cs" />
     <Compile Include="Gestures\GestureSensor.cs" />
     <Compile Include="Gestures\State.cs" />

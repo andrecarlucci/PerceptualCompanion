@@ -2,19 +2,18 @@
 using System.Windows.Forms;
 using MrWindows.KeyboardControl;
 using MrWindows.MouseControl;
+using MrWindows.WindowControl;
 
 namespace MrWindows {
     public class Windows {
+        public Mouse Mouse { get; set; }
+        public Keyboard Keyboard { get; set; }
+        public Window CurrentWindow { get; set; }
 
-        private Mouse _mouse = new Mouse();
-        private Keyboard _keyboard = new Keyboard();
-
-        public Mouse Mouse {
-            get { return _mouse; }
-        }
-
-        public Keyboard Keyboard {
-            get { return _keyboard; }
+        public Windows() {
+            Mouse = new Mouse();    
+            Keyboard = new Keyboard();
+            CurrentWindow = new Window();
         }
 
         public void LockWorkStation() {

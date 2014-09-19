@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using MrWindows;
 using MrWindows.KeyboardControl;
@@ -19,9 +20,6 @@ using Point = System.Drawing.Point;
 
 namespace Sense {
     public partial class MainWindow : Window {
-        private Camera _camera;
-        private Hand _hand;
-
         private Windows _win;
         private Mouse _mouse;
         private RealSenseCredentialPluginClient _client;
@@ -29,7 +27,10 @@ namespace Sense {
         private Point _lastMousePosition;
 
         private bool _mouseControl;
-        private bool _shouldLock;
+        private bool _scrollMode;
+        private bool _faceMonitorActive;
+        private DateTime _faceLastSeen;
+        private string _currentProcess = "";
 
         public MainWindow() {
             InitializeComponent();
@@ -43,6 +44,19 @@ namespace Sense {
             _client = new RealSenseCredentialPluginClient();
             _client.Start();
             StartCamera(await FindCamera());
+            StartProcessMonitor();
+        }
+
+        private void StartProcessMonitor() {
+            Task.Run(async () => {
+                while (true) {
+                    await Task.Delay(500);
+                    _currentProcess = _win.CurrentWindow.GetProcessName();
+                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => {
+                        ProcessName.Text = _currentProcess;
+                    }));
+                }
+            });
         }
 
         private async Task<Camera> FindCamera() {
@@ -62,32 +76,34 @@ namespace Sense {
 
         private void StartCamera(Camera camera) {
             var factory = new PoseFactory();
-            factory.Combine(camera.LeftHand, State.Opened);
-            factory.Combine(camera.RightHand, State.Opened);
-            CustomPose openBothHands = factory.Build("bothHandsOpen");
-            openBothHands.Begin += n => {
-                if (_mouseControl) return;
-                _mouseControl = true;
-                ShowMessage("Mouse control begin");
-            };
-
             factory.Combine(camera.LeftHand, State.Closed);
             factory.Combine(camera.RightHand, State.Closed);
             CustomPose closeBothHands = factory.Build("bothHandsClosed");
             closeBothHands.Begin += n => {
-                if (!_mouseControl) return;
-                _mouseControl = false;
-                _win.Mouse.MouseLeftUp();
-                ShowMessage("Mouse control end");
+                _scrollMode = true;
+            };
+            closeBothHands.End += n => {
+                _scrollMode = false;                
             };
 
             SetupMouseMove(camera);
             SetUpLeftHand(camera);
             SetUpRightHand(camera);
-            
-            camera.Poses.PosePeaceBegin += _mouse.MouseLeftClick;
-            camera.RightHand.Closed += _mouse.MouseLeftDown;
+
+            camera.RightHand.Closed += () => {
+                if (_scrollMode) {
+                    return;
+                }
+                _mouse.MouseLeftDown();
+            };
             camera.RightHand.Opened += _mouse.MouseLeftUp;
+
+            camera.LeftHand.Thumb.NotVisible += () => {
+                Debug.WriteLine("Thumb closed");
+                _mouse.MouseLeftDown();
+            };
+            camera.LeftHand.Thumb.Visible += _mouse.MouseLeftUp;
+
             camera.RightHand.NotVisible += () => {
                 _mouse.MouseLeftUp();
             };
@@ -99,35 +115,87 @@ namespace Sense {
                 await _client.Authorize();
             };
 
+            camera.Poses.PosePeaceBegin += () => {
+                if (_mouseControl) {
+                    _mouseControl = false;
+                    _win.Mouse.MouseLeftUp();
+                    ShowMessage("Mouse control end");                    
+                }
+                else {
+                    _mouseControl = true;
+                    ShowMessage("Mouse control begin");
+                }
+            };
+
             ShowMessage("Camera Started");
+
+            var leftPunch = new GesturePunch(camera.LeftHand);
+            leftPunch.GestureDetected += () => {
+                Debug.WriteLine("LEFT PUNCH!");
+            };
+
+            var rightPunch = new GesturePunch(camera.RightHand);
+            rightPunch.GestureDetected += () => {
+                Debug.WriteLine("RIGHT PUNCH!");
+            };
+
+            var click = new CustomGesture(camera.RightHand);
+            click.AddMovement(new MovementForward(10, TimeSpan.FromMilliseconds(500)));
+            click.GestureDetected += () => _mouse.MouseLeftClick();
         }
 
         private void SetUpArrows(Camera camera) {
-            camera.Gestures.GestureSwipeLeft += () => _win.Keyboard.PressKey(VirtualKey.VK_LEFT);
-            camera.Gestures.GestureSwipeRight += () => _win.Keyboard.PressKey(VirtualKey.VK_RIGHT);
+            camera.Gestures.GestureSwipeLeft += () => {
+                if (_currentProcess == "chrome") {
+                    _win.Keyboard.PressKey(VirtualKey.VK_CONTROL);
+                    _win.Keyboard.PressKey(VirtualKey.VK_LSHIFT);
+                    _win.Keyboard.PressKey(VirtualKey.VK_TAB);
+                    _win.Keyboard.ReleaseKey(VirtualKey.VK_TAB);
+                    _win.Keyboard.ReleaseKey(VirtualKey.VK_LSHIFT);
+                    _win.Keyboard.ReleaseKey(VirtualKey.VK_CONTROL);
+                }
+                else {
+                    _win.Keyboard.PressKey(VirtualKey.VK_LEFT);                    
+                }
+            };
+            camera.Gestures.GestureSwipeRight += () => {
+                if (_currentProcess == "chrome") {
+                    _win.Keyboard.PressKey(VirtualKey.VK_CONTROL);
+                    _win.Keyboard.PressKey(VirtualKey.VK_TAB);
+                    _win.Keyboard.ReleaseKey(VirtualKey.VK_TAB);
+                    _win.Keyboard.ReleaseKey(VirtualKey.VK_CONTROL);
+                }
+                else {
+                    _win.Keyboard.PressKey(VirtualKey.VK_RIGHT);                    
+                }
+            };
             camera.Gestures.GestureSwipeUp += () => _win.Keyboard.PressKey(VirtualKey.VK_UP);
             camera.Gestures.GestureSwipeDown += () => _win.Keyboard.PressKey(VirtualKey.VK_DOWN);
         }
 
         private void SetUpFace(Camera camera) {
+            Task.Run(async () => {
+                while (true) {
+                    await Task.Delay(1000);
+                    if (!_faceMonitorActive) {
+                        continue;
+                    }
+                    if (!camera.Face.IsVisible) {
+                        Debug.WriteLine("Locking: " + (DateTime.Now - _faceLastSeen).TotalSeconds);
+                    }
+                    if (!camera.Face.IsVisible && (DateTime.Now - _faceLastSeen) > TimeSpan.FromSeconds(5)) {
+                        _win.LockWorkStation();
+                    }
+                }
+            });
             camera.Face.Moved += d => DisplayBodyPart(camera.Face, 30);
             camera.Face.Visible += () => {
-                _shouldLock = false;
+                _faceLastSeen = DateTime.Now;
                 Debug.WriteLine("Face visible");
             };
-            camera.Face.NotVisible += async () => {
+            camera.Face.NotVisible += () => {
+                _faceLastSeen = DateTime.Now;
                 Debug.WriteLine("Face not visible");
-
-                //if (_shouldLock) {
-                //    return;
-                //}
-                //_shouldLock = true;
-                //for (int i = 0; i < 10; i++) {
-                //    await Task.Delay(TimeSpan.FromSeconds(10));
-                //    Debug.WriteLine("Locking in " + (10 - i) + "...");
-                //    if (!_shouldLock) return;
-                //}
-                //_win.LockWorkStation();
             };
         }
 
@@ -169,24 +237,23 @@ namespace Sense {
                     return;
                 }
                 var screenSize = _win.GetActiveScreenSize();
+                var newPosition = move.MapToScreen(screenSize.Width, screenSize.Height);
+                if (!(MathEx.CalcDistance(_lastMousePosition, newPosition) > 5)) return;
 
-                double screenWidth = screenSize.Width*1.5;
-                double screenHeight = screenSize.Height*1.5;
-
-                double left = (screenWidth - (move.X/Camera.ResolutionWidth)*screenWidth) - (screenWidth*0.2);
-                double top = ((move.Y/Camera.ResolutionHeight)*screenHeight) - (screenHeight*0.2);
-
-                var newPosition = new Point((int) left, (int) top);
-                if (!(MathEx.CalcDistance(_lastMousePosition, newPosition) > 3)) return;
-                _mouse.MoveCursor(newPosition);
+                if (_scrollMode) {
+                    var direction = DirectionHelper.GetDirection(_lastMousePosition, newPosition);
+                    if (direction == Direction.Left || direction == Direction.Right) {
+                        _mouse.ScrollHorizontally(newPosition.X - _lastMousePosition.X);
+                    }
+                    else {
+                        _mouse.ScrollVertically(newPosition.Y - _lastMousePosition.Y);                        
+                    }
+                }
+                else {
+                    _mouse.MoveCursor(newPosition.X, newPosition.Y);                    
+                }
                 _lastMousePosition = newPosition;
             };
-        }
-
-        private void DisableTracking() {
-            _mouse.MouseLeftUp();
-            ShowMessage("Tracking Disabled", "Thumbs up to enable it", BalloonIcon.Warning);
-            _mouseControl = false;
         }
 
         private void ShowMessage(string title, string message = " ", BalloonIcon icon = BalloonIcon.Info) {
@@ -202,24 +269,30 @@ namespace Sense {
 
         private void DisplayBodyPart(Item part, int size = 5) {
             Action action = delegate {
-                if (!_parts.Keys.Contains(part)) {
-                    var shape = new Ellipse {
-                        Width = size,
-                        Height = size
-                    };
-                    _parts.Add(part, shape);
-                    HandCanvas.Children.Add(shape);
-                    //Debug.WriteLine(part.ToString() + " added");
-                }
+                EnsureElipse(part, size);
                 var ellipse = _parts[part];
                 Color color = part.IsVisible ? Color.FromArgb(100, 100, 200, 100) : Colors.Transparent;
                 ellipse.Fill = new SolidColorBrush(color);
-                double left = HandCanvas.ActualWidth - (part.Position.X/320)*HandCanvas.ActualWidth;
-                double top = (part.Position.Y/240)*HandCanvas.ActualHeight;
-                Canvas.SetLeft(ellipse, left);
-                Canvas.SetTop(ellipse, top);
+
+                var p = part.Position.MapToScreen(240, 180);
+                if (p.X < 0) {
+                    p.X = 0;
+                }
+                Canvas.SetLeft(ellipse, p.X);
+                Canvas.SetTop(ellipse, p.Y);
             };
             Dispatcher.Invoke(action);
+        }
+
+        private void EnsureElipse(Item part, int size) {
+            if (!_parts.Keys.Contains(part)) {
+                var shape = new Ellipse {
+                    Width = size,
+                    Height = size
+                };
+                _parts.Add(part, shape);
+                HandCanvas.Children.Add(shape);
+            }
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
@@ -227,6 +300,10 @@ namespace Sense {
                 return;
             }
             DragMove();
+        }
+
+        private void MenuItem_OnChecked(object sender, RoutedEventArgs e) {
+            _faceMonitorActive = LockScreenMonitor.IsChecked;
         }
     }
 }

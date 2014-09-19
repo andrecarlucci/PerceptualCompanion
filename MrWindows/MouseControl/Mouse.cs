@@ -13,19 +13,24 @@ namespace MrWindows.MouseControl {
             }
         }
 
-        public void SetCursorPosition(int x, int y) {
-            MousePInvoke.SetCursorPos(x,y);
+        public void SetCursorPosition(int left, int top) {
+            MousePInvoke.SetCursorPos(left,top);
         }
 
-        public void SetCursorPosition(Point point) {
-            MousePInvoke.SetCursorPos(point.X, point.Y);
+        public void SetCursorPosition(Point p) {
+            MousePInvoke.SetCursorPos(p.X, p.Y);
         }
 
-        public void MoveCursor(Point point) {
+        public void MoveCursor(int left, int top) {
             var actual = CursorLocation;
-            var m = MathEx.CalcMiddle(actual, point);
-            SetCursorPosition(m);
-            SetCursorPosition(point);
+            var next = new Point(left, top);
+            var m2 = MathEx.CalcMiddle(actual, next);
+            var m1 = MathEx.CalcMiddle(actual, m2);
+            var m3 = MathEx.CalcMiddle(m2, next);
+            SetCursorPosition(m1);
+            SetCursorPosition(m2);
+            SetCursorPosition(m3);
+            SetCursorPosition(next);
         }
 
         public void MouseLeftClick() {

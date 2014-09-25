@@ -15,18 +15,24 @@
         >
     <Grid>
         <Border BorderThickness="1">
-            <StackPanel>
                 <Canvas x:Name="HandCanvas" Width="240" Height="180" Background="White">
+                <StackPanel>
                     <TextBlock x:Name="ProcessName" Text="" Foreground="Black"/>
-                </Canvas>
-            </StackPanel>
+                    <TextBlock x:Name="Active" Text="" Foreground="Black"/>
+                </StackPanel>
+            </Canvas>
         </Border>
         <tb:TaskbarIcon x:Name="NotifyIcon"
           IconSource="/Assets/blue.ico"
           ToolTipText="Control de World!">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="LockScreenMonitor" Header="LockScreen Watcher" IsCheckable="True" Checked="MenuItem_OnChecked">
+                    <MenuItem x:Name="LockScreenMonitor" 
+                              Header="LockScreen Watcher" 
+                              IsCheckable="True" 
+                              Checked="MenuItem_OnChecked"
+                              Unchecked="MenuItem_OnChecked"
+                              >
                     </MenuItem>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>

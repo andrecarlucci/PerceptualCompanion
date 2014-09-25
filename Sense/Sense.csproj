@@ -55,11 +55,17 @@
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net40\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="libpxcclr, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\_libs\libpxcclr.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector">
+      <HintPath>..\packages\SimpleInjector.2.5.2\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Diagnostics">
+      <HintPath>..\packages\SimpleInjector.2.5.2\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -84,6 +90,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Events\EventProcessor.cs" />
+    <Compile Include="ProcessMonitor.cs" />
+    <Compile Include="Events\SimpleTrigger.cs" />
+    <Compile Include="Util\CameraToScreenMapper.cs" />
+    <Compile Include="Profiles\HandToMouseProfile.cs" />
+    <Compile Include="Profiles\Profile.cs" />
+    <Compile Include="Profiles\ProfileManager.cs" />
+    <Compile Include="Profiles\ScrollProfile.cs" />
+    <Compile Include="Profiles\SwipeToArrowsProfile.cs" />
+    <Compile Include="Profiles\SwipeToControlTabProfile.cs" />
     <Compile Include="RealSenseCredentialPluginClient.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -153,11 +169,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MrWindows\MrWindows.csproj">
-      <Project>{8EC5E180-7455-46FD-BFD5-7A16C99EB19D}</Project>
+    <ProjectReference Include="..\..\..\opensource\MrWindows\MrWindows\MrWindows.csproj">
+      <Project>{8ec5e180-7455-46fd-bfd5-7a16c99eb19d}</Project>
       <Name>MrWindows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SharpPerceptual\SharpPerceptual.csproj">
+    <ProjectReference Include="..\..\..\opensource\SharpPerceptual\SharpPerceptual\SharpPerceptual.csproj">
       <Project>{e8444ac0-2c96-463f-b1b8-cf8804d7fcda}</Project>
       <Name>SharpPerceptual</Name>
     </ProjectReference>

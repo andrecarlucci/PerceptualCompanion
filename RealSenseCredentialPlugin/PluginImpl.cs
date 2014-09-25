@@ -1,29 +1,20 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
-using Microsoft.Win32;
 using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 using StringSocket;
-using XDMessaging;
 
 namespace RealSenseCredentialPlugin {
     public class PluginImpl : IPluginAuthentication {
 
         private ILog _logger;
-        private XDMessagingClient _client;
-        private IXDListener _listener;
-        private IXDBroadcaster _broadcaster;
         private bool _shouldAuthenticate;
 
         public PluginImpl() {
-            _client = new XDMessagingClient();
             _logger = LogManager.GetLogger("pGina.Plugin.RealSensePlugin");
-            _broadcaster = _client.Broadcasters.GetBroadcasterForMode(XDTransportMode.HighPerformanceUI);
         }
 
         public void Starting() {
@@ -31,7 +22,6 @@ namespace RealSenseCredentialPlugin {
 
         public void Stopping() {
             _logger.Debug("Stopping: ");
-            //_listener.Dispose();
         }
 
         public string Name {

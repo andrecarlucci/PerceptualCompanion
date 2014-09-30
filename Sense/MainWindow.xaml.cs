@@ -187,5 +187,9 @@ namespace Sense {
         private void MenuItem_OnChecked(object sender, RoutedEventArgs e) {
             _faceMonitorActive = LockScreenMonitor.IsChecked;
         }
+
+        private void PanelVisible_OnChecked(object sender, RoutedEventArgs e) {
+            Visibility = PanelVisible.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 }

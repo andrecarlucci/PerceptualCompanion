@@ -34,6 +34,14 @@
                               Unchecked="MenuItem_OnChecked"
                               >
                     </MenuItem>
+                    <MenuItem x:Name="PanelVisible" 
+                              Header="Panel Visible" 
+                              IsCheckable="True" 
+                              IsChecked="True"
+                              Checked="PanelVisible_OnChecked"
+                              Unchecked="PanelVisible_OnChecked"
+                              >
+                    </MenuItem>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
